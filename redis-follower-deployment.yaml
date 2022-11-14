@@ -1,15 +1,13 @@
-# SOURCE: https://cloud.google.com/kubernetes-engine/docs/tutorials/guestbook
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-leader
+  name: redis-follower
   labels:
     app: redis
-    role: leader
+    role: follower
     tier: backend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: redis
@@ -17,12 +15,12 @@ spec:
     metadata:
       labels:
         app: redis
-        role: leader
+        role: follower
         tier: backend
     spec:
       containers:
-      - name: leader
-        image: "docker.io/redis:6.0.5"
+      - name: follower
+        image: gcr.io/google_samples/gb-redis-follower:v2
         resources:
           requests:
             cpu: 100m
@@ -34,16 +32,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-leader
+  name: redis-follower
   labels:
     app: redis
-    role: leader
+    role: follower
     tier: backend
 spec:
   ports:
+    # the port that this service should serve on
   - port: 6379
-    targetPort: 6379
   selector:
     app: redis
-    role: leader
+    role: follower
     tier: backend
